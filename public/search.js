@@ -124,39 +124,6 @@ function handleSearchClick() {
     });
 }
 
-// --- Dark Mode Toggle Logic ---
-const themeToggleBtn = document.getElementById('theme-toggle');
-
-// Function to set theme based on a boolean (true for dark, false for light)
-function setTheme(isDark) {
-    if (isDark) {
-        document.body.classList.add('dark-mode');
-        localStorage.setItem('theme', 'dark');
-    } else {
-        document.body.classList.remove('dark-mode');
-        localStorage.setItem('theme', 'light');
-    }
-}
-
-// Check for saved theme preference on load
-document.addEventListener('DOMContentLoaded', () => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-        setTheme(savedTheme === 'dark');
-    } else {
-        // Default to light mode if no preference saved or first visit
-        setTheme(false); 
-    }
-});
-
-// Event listener for the theme toggle button
-if (themeToggleBtn) { // Check if the button exists before adding listener
-    themeToggleBtn.addEventListener('click', () => {
-        // Toggle the theme based on the current body class
-        setTheme(!document.body.classList.contains('dark-mode'));
-    });
-}
-
 // --- REMOVED AUTOMATIC SEARCH ON CATEGORY CHANGE ---
 // The following block has been removed to stop searches from triggering
 // automatically when category checkboxes are changed:
