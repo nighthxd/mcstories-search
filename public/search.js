@@ -123,10 +123,11 @@ async function executeSearch(searchInput, selectedCategories) {
                 const synopsisContainerId = `synopsis-item-${index}`; 
 
                 resultItem.innerHTML = `
-                    <h3>${story.title} 
+                    <h3>${story.title}</h3>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <button class="toggle-synopsis-btn" data-story-link="${story.link}" data-synopsis-id="${synopsisContainerId}">Show Synopsis</button>
                         <a href="${story.link}" target="_blank" class="read-more-btn">Read more</a>
-                    </h3>
-                    <button class="toggle-synopsis-btn" data-story-link="${story.link}" data-synopsis-id="${synopsisContainerId}">Show Synopsis</button>
+                    </div>
                     <div id="${synopsisContainerId}" class="synopsis-container"></div> `;
                 resultsContainer.appendChild(resultItem);
             });
