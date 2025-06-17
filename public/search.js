@@ -35,24 +35,24 @@ const categoryNames = {
 // Function to toggle synopsis visibility and fetch if not already loaded
 async function toggleSynopsis(buttonElement, storyLink, synopsisContainerId) {
     const synopsisContainer = document.getElementById(synopsisContainerId);
-
-    // If synopsis is currently visible, hide it
-    if (synopsisContainer.style.display === 'block') { // Check current display style
-        synopsisContainer.style.display = 'none'; // Hide it
+    
+    // Check if the synopsis is currently visible
+    if (synopsisContainer.style.display === 'block') {
+        // If visible, hide it
+        synopsisContainer.style.display = 'none';
         buttonElement.textContent = 'Show Synopsis';
-        return;
-    }
-
-    // If synopsis is not visible, show/fetch it
-    buttonElement.textContent = 'Loading Synopsis...'; // Provide feedback
-
-    if (fetchedSynopses.has(storyLink)) {
-        // Synopsis already fetched, just display it
-        synopsisContainer.innerHTML = `<p>${fetchedSynopses.get(storyLink)}</p>`;
-        synopsisContainer.style.display = 'block'; // Show it
-        buttonElement.textContent = 'Hide Synopsis';
     } else {
-        // Fetch synopsis for the first time
+        // If hidden, show loading message and fetch synopsis
+        synopsisContainer.innerHTML = 'Loading synopsis...'; // Show loading message
+        synopsisContainer.style.display = 'block'; // Make sure container is visible
+        buttonElement.textContent = 'Hide Synopsis'; // Change button text
+
+        // Check if synopsis is already fetched
+        if (fetchedSynopses.has(storyLink)) {
+            synopsisContainer.innerHTML = `<p>${fetchedSynopses.get(storyLink)}</p>`;
+            return;
+        }
+
         try {
             const response = await fetch(`/.netlify/functions/get-synopsis?url=${encodeURIComponent(storyLink)}`);
             
@@ -60,20 +60,16 @@ async function toggleSynopsis(buttonElement, storyLink, synopsisContainerId) {
                 const errorBody = await response.text();
                 console.error(`Backend get-synopsis function failed with status ${response.status}:`, errorBody);
                 synopsisContainer.innerHTML = `<p class="error">Error fetching synopsis (Backend issue: ${response.status}).</p>`;
-                buttonElement.textContent = 'Show Synopsis'; // Reset button text on error
                 return;
             }
 
             const data = await response.json();
-            const synopsisContent = data.synopsis || 'Synopsis not available.';
-            fetchedSynopses.set(storyLink, synopsisContent); // Store it in cache
-            synopsisContainer.innerHTML = `<p>${synopsisContent}</p>`;
-            synopsisContainer.style.display = 'block'; // Show it
-            buttonElement.textContent = 'Hide Synopsis';
+            const synopsisText = data.synopsis || 'Synopsis not available.';
+            fetchedSynopses.set(storyLink, synopsisText); // Store fetched synopsis
+            synopsisContainer.innerHTML = `<p>${synopsisText}</p>`; // Display the fetched synopsis
         } catch (error) {
             console.error("Error fetching synopsis:", error);
             synopsisContainer.innerHTML = '<p class="error">Error loading synopsis. Please try again.</p>';
-            buttonElement.textContent = 'Show Synopsis'; // Reset button text on error
         }
     }
 }
@@ -87,17 +83,16 @@ async function executeSearch(searchInput, selectedCategories) {
     
     // Determine which backend endpoint to call based on input
     if (searchInput && selectedCategories.length > 0) {
-        // Keyword AND Categories search
-        url = `/.netlify/functions/scrape-categories?tags=${selectedCategories.join(',')}&query=${searchInput}`;
-    } else if (searchInput && selectedCategories.length === 0) {
-        // Keyword ONLY search
-        url = `/.netlify/functions/scrape?query=${searchInput}`;
-    } else if (!searchInput && selectedCategories.length > 0) {
-        // Category ONLY search (this path will now only be hit if selectedCategories.length > 1)
-        url = `/.netlify/functions/scrape-categories?tags=${selectedCategories.join(',')}&query=`; // query is empty
+        // Both search term and categories selected: use scrape-categories
+        url = `/.netlify/functions/scrape-categories?query=${encodeURIComponent(searchInput)}&tags=${encodeURIComponent(selectedCategories.join(','))}`;
+    } else if (searchInput) {
+        // Only search term: use scrape
+        url = `/.netlify/functions/scrape?query=${encodeURIComponent(searchInput)}`;
+    } else if (selectedCategories.length > 0) {
+        // Only categories selected: use scrape-categories with empty query
+        url = `/.netlify/functions/scrape-categories?tags=${encodeURIComponent(selectedCategories.join(','))}`;
     } else {
-        // This case should ideally be caught by handleSearchClick, but as a fallback:
-        resultsContainer.innerHTML = '<p>Please enter a keyword or select at least one category.</p>';
+        resultsContainer.innerHTML = '<p>Please enter a search term or select categories.</p>';
         return;
     }
 
@@ -107,11 +102,21 @@ async function executeSearch(searchInput, selectedCategories) {
         if (!response.ok) {
             const errorBody = await response.text();
             console.error(`Backend function failed with status ${response.status}:`, errorBody);
-            resultsContainer.innerHTML = `<p class="error">Error occurred while searching (Backend issue: ${response.status}). Please try again later or refine your search.</p>`;
+            resultsContainer.innerHTML = `<p class="error">Error fetching stories (Backend issue: ${response.status}).</p>`;
             return;
         }
 
         const stories = await response.json();
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+        renderResults(stories);
+=======
+=======
+>>>>>>> parent of 5251731 (Added exclusions, may be broken)
+=======
+>>>>>>> parent of 5251731 (Added exclusions, may be broken)
 
         if (stories.length > 0) {
             resultsContainer.innerHTML = ''; // Clear loading message before displaying results
@@ -144,63 +149,78 @@ async function executeSearch(searchInput, selectedCategories) {
         } else {
             resultsContainer.innerHTML = '<p>No results found.</p>';
         }
+>>>>>>> parent of 5251731 (Added exclusions, may be broken)
+=======
+        renderResults(stories);
+>>>>>>> parent of 19dff86 (revert exclude cats)
     } catch (error) {
-        console.error("Fetch/JSON parsing error in executeSearch:", error);
-        resultsContainer.innerHTML = '<p class="error">Error occurred while searching. Please check your network connection or try again.</p>';
+        console.error("Error executing search:", error);
+        resultsContainer.innerHTML = '<p class="error">Error performing search. Please try again.</p>';
     }
 }
 
-// Main handler for the search button click
-function handleSearchClick() {
-    const searchInput = document.getElementById('search-input').value.toLowerCase();
+// Function to render results
+function renderResults(stories) {
     const resultsContainer = document.getElementById('results-container');
-    const searchButton = document.getElementById('search-button'); // Get button reference
+    resultsContainer.innerHTML = ''; // Clear previous results
 
-    const selectedCategories = [];
-    document.querySelectorAll('.categories input[type="checkbox"]:checked').forEach(checkbox => {
-        selectedCategories.push(checkbox.id);
-    });
-
-    if (!searchInput && selectedCategories.length === 0) {
-        resultsContainer.innerHTML = '<p>Please enter a keyword or select at least one category.</p>';
+    if (stories.length === 0) {
+        resultsContainer.innerHTML = '<p>No stories found matching your criteria.</p>';
         return;
     }
 
-    // NEW LOGIC for single category without search input
-    if (!searchInput && selectedCategories.length === 1) {
-        const categoryId = selectedCategories[0];
-        const categoryName = categoryNames[categoryId.toLowerCase()] || categoryId; // Fallback if name not found, use ID itself
-        const categoryUrl = `https://mcstories.com/Tags/${categoryId}.html`;
-        resultsContainer.innerHTML = `
-            <div class="result-item single-category-result">
-                <h3>Category: ${categoryId.toUpperCase()} - ${categoryName} 
-                    <a href="${categoryUrl}" target="_blank" class="read-more-btn">Go to Category</a>
-                </h3>
-            </div>
-        `;
-        // Reset button state and stop further execution
-        if (searchButton) {
-            searchButton.textContent = 'Search';
-            searchButton.disabled = false;
+    const ul = document.createElement('ul');
+    stories.forEach((story, index) => {
+        const li = document.createElement('li');
+        const synopsisContainerId = `synopsis-${index}`;
+
+        // Create link for the story title
+        const storyLink = document.createElement('a');
+        storyLink.href = story.link;
+        storyLink.textContent = story.title;
+        storyLink.target = "_blank"; // Open in new tab
+        storyLink.rel = "noopener noreferrer"; // Security best practice
+
+        // Create categories display
+        const categoriesSpan = document.createElement('span');
+        categoriesSpan.className = 'story-categories';
+        if (story.categories && story.categories.length > 0) {
+            const fullCategoryNames = story.categories.map(catCode => categoryNames[catCode] || catCode);
+            categoriesSpan.textContent = ` (${fullCategoryNames.join(', ')})`;
         }
-        return; // Stop the function here as we've handled this case
-    }
 
+        // Create synopsis toggle button
+        const synopsisButton = document.createElement('button');
+        synopsisButton.textContent = 'Show Synopsis';
+        synopsisButton.className = 'synopsis-toggle-btn';
+        synopsisButton.onclick = () => toggleSynopsis(synopsisButton, story.link, synopsisContainerId);
 
-    // Show loading feedback
-    if (searchButton) {
-        searchButton.textContent = 'Searching...';
-        searchButton.disabled = true;
-    }
-    resultsContainer.innerHTML = '<div class="loading-bar"></div><p>Searching...</p>'; // Add loading bar and text
+        // Create synopsis container
+        const synopsisDiv = document.createElement('div');
+        synopsisDiv.id = synopsisContainerId;
+        synopsisDiv.className = 'synopsis-container';
+        synopsisDiv.style.display = 'none'; // Hidden by default
 
-    // Call the unified executeSearch function and ensure button state is reset
-    executeSearch(searchInput, selectedCategories).finally(() => {
-        if (searchButton) {
-            searchButton.textContent = 'Search';
-            searchButton.disabled = false;
-        }
+        li.appendChild(storyLink);
+        li.appendChild(categoriesSpan);
+        li.appendChild(document.createElement('br')); // Line break
+        li.appendChild(synopsisButton);
+        li.appendChild(synopsisDiv);
+        ul.appendChild(li);
     });
+    resultsContainer.appendChild(ul);
+}
+
+// Handle search button click
+function handleSearchClick() {
+    const searchInput = document.getElementById('search-input').value.trim();
+    const selectedCheckboxes = document.querySelectorAll('.categories input[type="checkbox"]:checked');
+    const selectedCategories = Array.from(selectedCheckboxes).map(cb => cb.value.split('/').pop().replace('.html', ''));
+
+    const resultsContainer = document.getElementById('results-container');
+    resultsContainer.innerHTML = '<p>Searching...</p>'; // Show loading message
+
+    executeSearch(searchInput, selectedCategories);
 }
 
 // --- Dark Mode Toggle Logic ---

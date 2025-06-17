@@ -1,7 +1,21 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const { searchall } = require('../../categories');
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
 const excludedLinks = require('../../excludedLinks');
+>>>>>>> parent of 5251731 (Added exclusions, may be broken)
+=======
+const excludedLinks = require('../../excludedLinks');
+>>>>>>> parent of 5251731 (Added exclusions, may be broken)
+=======
+>>>>>>> parent of 19dff86 (revert exclude cats)
+=======
+const excludedLinks = require('../../excludedLinks');
+>>>>>>> parent of 5251731 (Added exclusions, may be broken)
 
 // scrapeWebsite function - now only fetches title and link
 async function scrapeWebsite(url, searchQuery) {
@@ -16,7 +30,21 @@ async function scrapeWebsite(url, searchQuery) {
             const fullLink = new URL(link, url).href;
 
             const isAuthorOrTagPage = fullLink.includes('https://mcstories.com/Authors') || fullLink.includes('https://mcstories.com/Tags/');
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
             const isExcluded = excludedLinks.has(fullLink);
+>>>>>>> parent of 5251731 (Added exclusions, may be broken)
+=======
+            const isExcluded = excludedLinks.has(fullLink);
+>>>>>>> parent of 5251731 (Added exclusions, may be broken)
+=======
+>>>>>>> parent of 19dff86 (revert exclude cats)
+=======
+            const isExcluded = excludedLinks.has(fullLink);
+>>>>>>> parent of 5251731 (Added exclusions, may be broken)
             const matchesQuery = searchQuery === '' || title.toLowerCase().includes(searchQuery.toLowerCase());
 
             if (title && link && !isAuthorOrTagPage && !isExcluded && matchesQuery) {
