@@ -122,7 +122,7 @@ article#mcstories {
     max-width: 36em; /* Original setting */
     font-family: 'PT Serif', Georgia, serif; /* Original setting */
     line-height: 155%; /* Original setting */
-    text-align: left; /* Original setting (for content within the article) */
+    text-align: center; /* Original setting (for content within the article) */
     font-size: 98%; /* Original setting */
     text-rendering: optimizeLegibility; /* Original setting */
     transition: background 0.3s, color 0.3s; /* Smooth transition */
@@ -136,7 +136,7 @@ article#mcstories section {
 /* Specific paragraph styles from your original CSS */
 article#mcstories p {
     hyphens: auto;
-    text-align: justify;
+    text-align: center;
     margin-top: 0.25em;
     margin-bottom: 0em;
     text-indent: 2em;
@@ -218,10 +218,11 @@ header p, footer p, .synopsis p {
 /* --- Categories Styles --- */
 .categories {
     margin-top: 40px; /* Original setting from your CSS */
+	margin-left: 5px;
     display: flex; /* Existing */
     flex-wrap: wrap; /* Existing */
     margin: 10px; /* Original setting */
-    margin-bottom: 20px; /* Original setting */
+    margin-bottom: 10px; /* Original setting */
     padding: 15px; /* Existing */
     border: 1px solid var(--border-color); /* Existing */
     border-radius: 8px; /* Existing */
@@ -231,8 +232,11 @@ header p, footer p, .synopsis p {
 }
 
 .category-group {
+	margin-left: 5px;
     margin-right: 20px; /* Original setting */
     text-align: left; /* Original setting (for text within each group) */
+    column-count: 2; /* This will arrange the content into two columns */
+    column-gap: 30px; /* Optional: Add some space between columns for readability */
 }
 
 .category-group label {
