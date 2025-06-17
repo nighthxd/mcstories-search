@@ -55,12 +55,12 @@ header, hgroup, main, nav, section, summary {
     --text-color: black; /* From original article/body-container color, general links */
     --heading-color: black; /* Assuming headings are black by default */
     --container-bg: rgb(244, 244, 248); /* From original article/body-container background */
-    --border-color: #ddd; /* Existing, used for results/categories borders */
+    --border-color: #0056b3; /* Existing, used for results/categories borders */
     --link-color: black; /* From original a:link */
     --link-hover-bg: rgba(72, 61, 139, 0.75); /* From original a:hover */
-    --button-bg: #4CAF50; /* Existing green */
+    --button-bg: #007bff; /* Existing green */
     --button-text: white; /* Existing */
-    --button-hover-bg: #45a049; /* Existing */
+    --button-hover-bg: #0056b3; /* Existing */
     --input-bg: #f9f9f9; /* Existing */
     --input-border: #ccc; /* Existing */
     --disclaimer-text: #555; /* Existing */
@@ -81,12 +81,12 @@ body.dark-mode {
     --text-color: #e0e0e0; /* Light text */
     --heading-color: #f4f4f4;
     --container-bg: #3c3c3c; /* Slightly lighter dark container */
-    --border-color: #555;
+    --border-color: #0056b3;
     --link-color: #90caf9; /* Lighter blue for links */
     --link-hover-bg: rgba(144, 202, 249, 0.3);
-    --button-bg: #66bb6a; /* Lighter green button */
+    --button-bg: #0056b3; /* Lighter green button */
     --button-text: #2b2b2b; /* Dark text for light button on dark background */
-    --button-hover-bg: #81c784;
+    --button-hover-bg: #0d47a1;
     --input-bg: #4a4a4a;
     --input-border: #777;
     --disclaimer-text: #bbb;
@@ -414,6 +414,7 @@ a.mf:hover {
     text-align: center;
     font-style: italic;
     color: var(--text-color); /* Use variable */
+	column-count: 2;
 }
 
 /* Other original styles from your CSS */
