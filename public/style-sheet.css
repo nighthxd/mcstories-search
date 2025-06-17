@@ -58,18 +58,14 @@
     --input-bg: #f9f9f9;
     --input-border: #ccc;
     --disclaimer-text: #555;
+    --error-color: #cc0000;
+    /* Category link default backgrounds */
     --category-link-bg-bd: rgba(128, 128, 133, 0.25); /* Grey */
-    --category-link-hover-bg-bd: rgba(72, 61, 139, 0.75); /* Dark Slate Blue */
     --category-link-bg-mm: rgba(0, 255, 255, 0.25); /* Cyan */
-    --category-link-hover-bg-mm: rgba(0, 255, 255, 0.75);
     --category-link-bg-fd: rgba(255, 192, 203, 0.25); /* Pink */
-    --category-link-hover-bg-fd: rgba(255, 192, 203, 0.75);
     --category-link-bg-md: rgba(255, 255, 0, 0.25); /* Yellow */
-    --category-link-hover-bg-md: rgba(255, 255, 0, 0.75);
     --category-link-bg-ff: rgba(255, 0, 0, 0.25); /* Red */
-    --category-link-hover-bg-ff: rgba(255, 0, 0, 0.75);
     --category-link-bg-mf: rgba(128, 0, 128, 0.25); /* Purple */
-    --category-link-hover-bg-mf: rgba(128, 0, 128, 0.75);
 }
 
 /* --- Dark Mode Overrides --- */
@@ -82,24 +78,19 @@ body.dark-mode {
     --link-color: #90caf9; /* Lighter blue for links */
     --link-hover-bg: rgba(144, 202, 249, 0.3);
     --button-bg: #66bb6a; /* Lighter green button */
-    --button-text: #2b2b2b;
+    --button-text: #2b2b2b; /* Dark text for light button on dark background */
     --button-hover-bg: #81c784;
     --input-bg: #4a4a4a;
     --input-border: #777;
     --disclaimer-text: #bbb;
-    /* Dark mode adjustments for category links - adjust these for better contrast */
+    --error-color: #ff6666; /* Lighter red for dark mode errors */
+    /* Dark mode adjustments for category links - ensure good contrast */
     --category-link-bg-bd: rgba(100, 100, 100, 0.25);
-    --category-link-hover-bg-bd: rgba(100, 100, 100, 0.75);
     --category-link-bg-mm: rgba(0, 200, 200, 0.25);
-    --category-link-hover-bg-mm: rgba(0, 200, 200, 0.75);
     --category-link-bg-fd: rgba(255, 150, 150, 0.25);
-    --category-link-hover-bg-fd: rgba(255, 150, 150, 0.75);
     --category-link-bg-md: rgba(200, 200, 0, 0.25);
-    --category-link-hover-bg-md: rgba(200, 200, 0, 0.75);
     --category-link-bg-ff: rgba(200, 50, 50, 0.25);
-    --category-link-hover-bg-ff: rgba(200, 50, 50, 0.75);
     --category-link-bg-mf: rgba(150, 0, 150, 0.25);
-    --category-link-hover-bg-mf: rgba(150, 0, 150, 0.75);
 }
 
 
@@ -211,42 +202,43 @@ h3.title, h3.byline, h3 {
 }
 
 /* --- Links General Styles --- */
-.result-item a, a:link, a:visited {
+/* Default link states */
+.result-item a, a:link {
     color: var(--link-color);
     text-decoration: none;
     transition: color 0.2s;
 }
 
+/* This targets visited links in general */
+a:visited {
+    color: var(--link-color); /* Use the general link color for visited */
+}
+
+/* Hover styles for all links */
 .result-item a:hover, a:hover {
     text-decoration: underline;
     background: var(--link-hover-bg);
-    color: var(--button-text); /* This might need adjustment if button-text is dark in light mode */
+    color: white; /* Ensure text is visible on hover, overrides button-text for links */
 }
 
-/* Re-setting some specific link hover behaviors from original stylesheet */
-/* Original: background was rgb(115, 115, 166); background: rgba(72, 61, 139, 0.75); */
-.index a:hover {
-    background: var(--link-hover-bg);
-    color: var(--button-text); /* Ensure contrast */
-}
-
+/* Specific article links (if different from general) */
 article a:visited {
-    color: var(--link-color); /* Apply variable */
+    color: var(--link-color); /* Keep using variable */
 }
 
 article a:hover {
-    color: var(--button-text); /* Use a contrast color */
-    background: var(--link-hover-bg); /* Apply variable */
+    color: white; /* Explicitly white for contrast */
+    background: var(--link-hover-bg);
 }
 
 /* --- Category Specific Link Backgrounds (now using variables) --- */
 a.bd:link {
     background: var(--category-link-bg-bd);
-    color: var(--text-color); /* Ensure text is visible */
+    color: var(--text-color);
 }
 a.bd:hover {
-    background: var(--category-link-hover-bg-bd);
-    color: var(--button-text); /* Or a specific hover text color for these links */
+    background: rgba(72, 61, 139, 0.75); /* Dark Slate Blue, specific hover for bd */
+    color: white;
 }
 
 a.mm:link {
@@ -254,8 +246,8 @@ a.mm:link {
     color: var(--text-color);
 }
 a.mm:hover {
-    background: var(--category-link-hover-bg-mm);
-    color: black; /* Original behavior */
+    background: rgba(0, 255, 255, 0.75); /* Cyan, specific hover for mm */
+    color: black; /* Original hover color */
 }
 
 a.fd:link {
@@ -263,8 +255,8 @@ a.fd:link {
     color: var(--text-color);
 }
 a.fd:hover {
-    background: var(--category-link-hover-bg-fd);
-    color: black; /* Original behavior */
+    background: rgba(255, 192, 203, 0.75); /* Pink, specific hover for fd */
+    color: black; /* Original hover color */
 }
 
 a.md:link {
@@ -272,8 +264,8 @@ a.md:link {
     color: var(--text-color);
 }
 a.md:hover {
-    background: var(--category-link-hover-bg-md);
-    color: black; /* Original behavior */
+    background: rgba(255, 255, 0, 0.75); /* Yellow, specific hover for md */
+    color: black; /* Original hover color */
 }
 
 a.ff:link {
@@ -281,8 +273,8 @@ a.ff:link {
     color: var(--text-color);
 }
 a.ff:hover {
-    background: var(--category-link-hover-bg-ff);
-    color: white; /* Original behavior */
+    background: rgba(255, 0, 0, 0.75); /* Red, specific hover for ff */
+    color: white; /* Original hover color */
 }
 
 a.mf:link {
@@ -290,10 +282,9 @@ a.mf:link {
     color: var(--text-color);
 }
 a.mf:hover {
-    background: var(--category-link-hover-bg-mf);
-    color: white; /* Original behavior */
+    background: rgba(128, 0, 128, 0.75); /* Purple, specific hover for mf */
+    color: white; /* Original hover color */
 }
-
 
 /* --- Synopsis & Loading Styles --- */
 .show-synopsis-btn {
@@ -324,7 +315,7 @@ a.mf:hover {
 }
 
 .error {
-    color: #cc0000; /* Fixed error color, might need dark mode variant */
+    color: var(--error-color);
 }
 
 /* Basic Loading Bar Styles */
@@ -340,7 +331,6 @@ a.mf:hover {
 
 .loading-bar::before {
     content: '';
-    display: block;
     display: block;
     height: 100%;
     width: 30%;
