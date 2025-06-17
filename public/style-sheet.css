@@ -1,48 +1,6 @@
 /* style-sheet.css */
 /* Basic Reset & Font */
-@font-face {
-    font-family: 'PT Serif';
-    src: url('WebFont/PTF55F_W.eot');
-    src: url('WebFont/PTF55F_W.eot?#iefix') format('embedded-opentype'),
-         url('WebFont/PTF55F_W.woff') format('woff'),
-         url('WebFont/PTF55F_W.ttf') format('truetype'),
-         url('WebFont/PTF55F_W.svg#PTSerifRegular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'PT Serif';
-    src: url('WebFont/PTF56F_W.eot');
-    src: url('WebFont/PTF56F_W.eot?#iefix') format('embedded-opentype'),
-         url('WebFont/PTF56F_W.woff') format('woff'),
-         url('WebFont/PTF56F_W.ttf') format('truetype'),
-         url('WebFont/PTF56F_W.svg#PTSerifItalic') format('svg');
-    font-weight: normal;
-    font-style: italic;
-}
-
-@font-face {
-    font-family: 'PT Serif';
-    src: url('WebFont/PTF75F_W.eot');
-    src: url('WebFont/PTF75F_W.eot?#iefix') format('embedded-opentype'),
-         url('WebFont/PTF75F_W.woff') format('woff'),
-         url('WebFont/PTF75F_W.ttf') format('truetype'),
-         url('WebFont/PTF75F_W.svg#PTSerifBold') format('svg');
-    font-weight: bold;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'PT Serif';
-    src: url('WebFont/PTF76F_W.eot');
-    src: url('WebFont/PTF76F_W.eot?#iefix') format('embedded-opentype'),
-         url('WebFont/PTF76F_W.woff') format('woff'),
-         url('WebFont/PTF76F_W.ttf') format('truetype'),
-         url('WebFont/PTF76F_W.svg#PTSerifBoldItalic') format('svg');
-    font-weight: bold;
-    font-style: italic;
-}
+@import url('https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 /* Ensure these display properties from your original CSS are present */
 article, aside, details, figcaption, figure, footer,
@@ -127,6 +85,7 @@ article#mcstories {
     font-size: 98%; /* Original setting */
     text-rendering: optimizeLegibility; /* Original setting */
     transition: background 0.3s, color 0.3s; /* Smooth transition */
+    position: relative; /* Added for absolute positioning of theme-toggle */
 }
 
 /* NEW: Center align sections within the mcstories article */
@@ -191,7 +150,7 @@ header p, footer p, .synopsis p {
 }
 
 /* --- Button Styles --- */
-#search-button, #theme-toggle {
+#search-button {
     padding: 10px 15px;
     background-color: var(--button-bg);
     color: var(--button-text);
@@ -199,21 +158,65 @@ header p, footer p, .synopsis p {
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-}
-
-#search-button {
     border-radius: 0 4px 4px 0;
 }
 
-#search-button:hover, #theme-toggle:hover {
+#search-button:hover {
     background-color: var(--button-hover-bg);
 }
 
+/* --- Theme Toggle Button Specific Styles --- */
 #theme-toggle {
+    position: absolute;
+    top: 15px; /* Adjust as needed */
+    right: 15px; /* Adjust as needed */
+    width: 40px; /* Smaller size */
+    height: 40px; /* Smaller size */
+    border-radius: 50%; /* Make it round */
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    cursor: pointer;
+    font-size: 20px; /* Size for the icon */
+    display: flex; /* To center the icon */
+    align-items: center; /* To center the icon */
+    justify-content: center; /* To center the icon */
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    z-index: 10; /* Ensure it stays on top of other content if any overlap */
+}
+
+/* Swapped icons: Moon for light mode, Sun for dark mode */
+#theme-toggle::before {
+    content: '🌙'; /* Moon icon for light mode (default) */
+}
+
+body.dark-mode #theme-toggle::before {
+    content: '☀️'; /* Sun icon for dark mode */
+}
+
+#theme-toggle:hover {
+    background-color: var(--button-hover-bg);
+}
+
+
+/* NEW: Styles for the "Read more" button */
+.read-more-btn {
+    display: inline-block; /* Make it behave like an inline block for layout */
+    padding: 5px 10px; /* Smaller padding than main buttons */
+    margin-left: 10px; /* Space from the title */
+    background-color: var(--button-bg);
+    color: var(--button-text) !important; /* Use !important to override link default color */
+    border: 1px solid var(--button-bg);
     border-radius: 4px;
-    padding: 8px 12px;
-    margin-bottom: 15px;
-    /* Being an inline-block element in a text-align: center parent naturally centers it */
+    cursor: pointer;
+    font-size: 0.8em; /* Slightly smaller font than title */
+    text-decoration: none !important; /* Remove underline */
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.read-more-btn:hover {
+    background-color: var(--button-hover-bg);
+    border-color: var(--button-hover-bg);
 }
 
 /* --- Categories Styles --- */
@@ -260,8 +263,37 @@ header p, footer p, .synopsis p {
     text-align: left; /* Keep content within result-item left-aligned */
 }
 
+/* NEW: Styles for single category result item to center it */
+.result-item.single-category-result {
+    display: flex;
+    flex-direction: column; /* Stack h3 and button if needed, but flex-wrap handles inline better */
+    align-items: center; /* Center horizontally in the flex container */
+    justify-content: center; /* Center content if items are on single line */
+    text-align: center; /* Ensure text within is centered if it wraps */
+    border: 1px solid var(--border-color); /* Apply border here as well */
+    padding: 15px; /* Adjust padding */
+    margin: 15px auto; /* Center the block itself and add vertical margin */
+}
+
+.result-item.single-category-result h3 {
+    display: flex; /* Make h3 itself a flex container */
+    align-items: center; /* Vertically align items in h3 */
+    justify-content: center; /* Center content of h3 */
+    flex-wrap: wrap; /* Allow wrapping for long titles + button */
+    text-align: center; /* Ensure internal text is centered */
+    width: 100%; /* Take full width for centering */
+    margin: 0; /* Remove default h3 margins */
+}
+
+.result-item.single-category-result .read-more-btn {
+    margin-left: 10px; /* Space from category name */
+    margin-top: 5px; /* Add a little top margin if it wraps */
+    margin-bottom: 5px; /* Add a little bottom margin if it wraps */
+}
+
+
 .result-item:last-child {
-	border-bottom: none; /* Original setting */
+	/* border-bottom: none; */ /* This rule was removed as it was causing the last item's border to disappear */
 }
 
 .result-item h3 {
@@ -295,7 +327,7 @@ a:visited {
 
 a:hover {
     color: white; /* Original setting */
-    background: var(--link-hover-bg); /* Use variable */
+    background: var(--link-hover-bg);
 }
 
 article a:visited {
@@ -304,7 +336,7 @@ article a:visited {
 
 article a:hover {
     color: white; /* Original setting */
-    background: var(--link-hover-bg); /* Use variable */
+    background: var(--link-hover-bg);
 }
 
 /* Specific category link colors from your original CSS, now using variables for default colors */
@@ -341,7 +373,7 @@ a.ff:hover {
 }
 
 a.mf:link {
-    background: var(--category-link-bg-mf);
+    background: rgba(128, 0, 128, 0.25);
 }
 a.mf:hover {
     background: rgba(128, 0, 128, 0.75);
@@ -349,7 +381,7 @@ a.mf:hover {
 }
 
 /* --- Synopsis & Loading Styles --- */
-.show-synopsis-btn {
+.toggle-synopsis-btn { /* Changed from .show-synopsis-btn */
     padding: 8px 12px;
     background-color: var(--button-bg);
     color: var(--button-text);
@@ -361,7 +393,7 @@ a.mf:hover {
     transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
-.show-synopsis-btn:hover {
+.toggle-synopsis-btn:hover { /* Changed from .show-synopsis-btn:hover */
     background-color: var(--button-hover-bg);
 }
 
@@ -375,6 +407,7 @@ a.mf:hover {
     color: var(--text-color);
     text-align: left; /* Ensure synopsis text is left-aligned */
     transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+    display: none; /* Initially hide the synopsis container */
 }
 
 .error {

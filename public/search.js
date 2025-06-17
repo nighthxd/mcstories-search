@@ -1,24 +1,80 @@
 // search.js
-// Function to fetch and display synopsis on demand
-async function fetchSynopsis(storyLink, synopsisContainerId) {
+// Global map to store fetched synopses to avoid refetching
+const fetchedSynopses = new Map();
+
+// Corrected mapping for category short codes to full names from index.html labels
+const categoryNames = {
+    'bd': 'bondage',
+    'be': 'bestiality',
+    'ca': 'cannibalism',
+    'cb': 'super-hero/heroine',
+    'ds': 'dom and/or sub',
+    'ex': 'exhibitionism',
+    'fd': 'female dominant',
+    'ff': 'female/female sex',
+    'ft': 'fetish (usually clothing)',
+    'fu': 'furry',
+    'gr': 'growth/enlargement',
+    'hm': 'humiliation',
+    'hu': 'humor',
+    'in': 'incest',
+    'la': 'lactation',
+    'ma': 'masturbation',
+    'mc': 'mind control',
+    'md': 'male dominant',
+    'mf': 'male/female sex',
+    'mm': 'male/male sex',
+    'nc': 'non-consensual',
+    'rb': 'robots',
+    'sc': 'scatology',
+    'sf': 'science fiction',
+    'ts': 'time stop',
+    'ws': 'watersports'
+};
+
+// Function to toggle synopsis visibility and fetch if not already loaded
+async function toggleSynopsis(buttonElement, storyLink, synopsisContainerId) {
     const synopsisContainer = document.getElementById(synopsisContainerId);
-    synopsisContainer.innerHTML = 'Loading synopsis...'; // Show loading message
 
-    try {
-        const response = await fetch(`/.netlify/functions/get-synopsis?url=${encodeURIComponent(storyLink)}`);
-        
-        if (!response.ok) {
-            const errorBody = await response.text();
-            console.error(`Backend get-synopsis function failed with status ${response.status}:`, errorBody);
-            synopsisContainer.innerHTML = `<p class="error">Error fetching synopsis (Backend issue: ${response.status}).</p>`;
-            return;
+    // If synopsis is currently visible, hide it
+    if (synopsisContainer.style.display === 'block') { // Check current display style
+        synopsisContainer.style.display = 'none'; // Hide it
+        buttonElement.textContent = 'Show Synopsis';
+        return;
+    }
+
+    // If synopsis is not visible, show/fetch it
+    buttonElement.textContent = 'Loading Synopsis...'; // Provide feedback
+
+    if (fetchedSynopses.has(storyLink)) {
+        // Synopsis already fetched, just display it
+        synopsisContainer.innerHTML = `<p>${fetchedSynopses.get(storyLink)}</p>`;
+        synopsisContainer.style.display = 'block'; // Show it
+        buttonElement.textContent = 'Hide Synopsis';
+    } else {
+        // Fetch synopsis for the first time
+        try {
+            const response = await fetch(`/.netlify/functions/get-synopsis?url=${encodeURIComponent(storyLink)}`);
+            
+            if (!response.ok) {
+                const errorBody = await response.text();
+                console.error(`Backend get-synopsis function failed with status ${response.status}:`, errorBody);
+                synopsisContainer.innerHTML = `<p class="error">Error fetching synopsis (Backend issue: ${response.status}).</p>`;
+                buttonElement.textContent = 'Show Synopsis'; // Reset button text on error
+                return;
+            }
+
+            const data = await response.json();
+            const synopsisContent = data.synopsis || 'Synopsis not available.';
+            fetchedSynopses.set(storyLink, synopsisContent); // Store it in cache
+            synopsisContainer.innerHTML = `<p>${synopsisContent}</p>`;
+            synopsisContainer.style.display = 'block'; // Show it
+            buttonElement.textContent = 'Hide Synopsis';
+        } catch (error) {
+            console.error("Error fetching synopsis:", error);
+            synopsisContainer.innerHTML = '<p class="error">Error loading synopsis. Please try again.</p>';
+            buttonElement.textContent = 'Show Synopsis'; // Reset button text on error
         }
-
-        const data = await response.json();
-        synopsisContainer.innerHTML = `<p>${data.synopsis}</p>`; // Display the fetched synopsis
-    } catch (error) {
-        console.error("Error fetching synopsis:", error);
-        synopsisContainer.innerHTML = '<p class="error">Error loading synopsis. Please try again.</p>';
     }
 }
 
@@ -67,20 +123,20 @@ async function executeSearch(searchInput, selectedCategories) {
                 const synopsisContainerId = `synopsis-item-${index}`; 
 
                 resultItem.innerHTML = `
-                    <h3>${story.title}</h3>
-                    <button class="show-synopsis-btn" data-story-link="${story.link}" data-synopsis-id="${synopsisContainerId}">Show Synopsis</button>
-                    <br> <a href="${story.link}" target="_blank">Read more</a>
+                    <h3>${story.title} 
+                        <a href="${story.link}" target="_blank" class="read-more-btn">Read more</a>
+                    </h3>
+                    <button class="toggle-synopsis-btn" data-story-link="${story.link}" data-synopsis-id="${synopsisContainerId}">Show Synopsis</button>
                     <div id="${synopsisContainerId}" class="synopsis-container"></div> `;
                 resultsContainer.appendChild(resultItem);
             });
 
-            // Attach event listeners to the "Show Synopsis" buttons
-            document.querySelectorAll('.show-synopsis-btn').forEach(button => {
+            // Attach event listeners to the "Show/Hide Synopsis" buttons
+            document.querySelectorAll('.toggle-synopsis-btn').forEach(button => {
                 button.addEventListener('click', (event) => {
                     const storyLink = event.target.dataset.storyLink;
                     const synopsisId = event.target.dataset.synopsisId;
-                    fetchSynopsis(storyLink, synopsisId);
-                    event.target.style.display = 'none'; // Hide the button after click
+                    toggleSynopsis(event.target, storyLink, synopsisId); // Pass the button element
                 });
             });
 
@@ -112,12 +168,13 @@ function handleSearchClick() {
     // NEW LOGIC for single category without search input
     if (!searchInput && selectedCategories.length === 1) {
         const categoryId = selectedCategories[0];
-        // Construct the URL directly based on the known pattern
+        const categoryName = categoryNames[categoryId.toLowerCase()] || categoryId; // Fallback if name not found, use ID itself
         const categoryUrl = `https://mcstories.com/Tags/${categoryId}.html`;
         resultsContainer.innerHTML = `
-            <div class="result-item">
-                <h3>Category: ${categoryId.toUpperCase()}</h3>
-                <a href="${categoryUrl}" target="_blank">Go to Category</a>
+            <div class="result-item single-category-result">
+                <h3>Category: ${categoryId.toUpperCase()} - ${categoryName} 
+                    <a href="${categoryUrl}" target="_blank" class="read-more-btn">Go to Category</a>
+                </h3>
             </div>
         `;
         // Reset button state and stop further execution
