@@ -1,3 +1,4 @@
+// search.js
 // Function to fetch and display synopsis on demand
 async function fetchSynopsis(storyLink, synopsisContainerId) {
     const synopsisContainer = document.getElementById(synopsisContainerId);
@@ -36,7 +37,7 @@ async function executeSearch(searchInput, selectedCategories) {
         // Keyword ONLY search
         url = `/.netlify/functions/scrape?query=${searchInput}`;
     } else if (!searchInput && selectedCategories.length > 0) {
-        // Category ONLY search
+        // Category ONLY search (this path will now only be hit if selectedCategories.length > 1)
         url = `/.netlify/functions/scrape-categories?tags=${selectedCategories.join(',')}&query=`; // query is empty
     } else {
         // This case should ideally be caught by handleSearchClick, but as a fallback:
@@ -107,6 +108,26 @@ function handleSearchClick() {
         resultsContainer.innerHTML = '<p>Please enter a keyword or select at least one category.</p>';
         return;
     }
+
+    // NEW LOGIC for single category without search input
+    if (!searchInput && selectedCategories.length === 1) {
+        const categoryId = selectedCategories[0];
+        // Construct the URL directly based on the known pattern
+        const categoryUrl = `https://mcstories.com/Tags/${categoryId}.html`;
+        resultsContainer.innerHTML = `
+            <div class="result-item">
+                <h3>Category: ${categoryId.toUpperCase()}</h3>
+                <a href="${categoryUrl}" target="_blank">Go to Category</a>
+            </div>
+        `;
+        // Reset button state and stop further execution
+        if (searchButton) {
+            searchButton.textContent = 'Search';
+            searchButton.disabled = false;
+        }
+        return; // Stop the function here as we've handled this case
+    }
+
 
     // Show loading feedback
     if (searchButton) {
