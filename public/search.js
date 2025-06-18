@@ -107,17 +107,7 @@ async function executeSearch(searchInput, selectedCategories) {
         }
 
         const stories = await response.json();
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
         renderResults(stories);
-=======
-=======
->>>>>>> parent of 5251731 (Added exclusions, may be broken)
-=======
->>>>>>> parent of 5251731 (Added exclusions, may be broken)
-
         if (stories.length > 0) {
             resultsContainer.innerHTML = ''; // Clear loading message before displaying results
             stories.forEach((story, index) => {
@@ -149,10 +139,7 @@ async function executeSearch(searchInput, selectedCategories) {
         } else {
             resultsContainer.innerHTML = '<p>No results found.</p>';
         }
->>>>>>> parent of 5251731 (Added exclusions, may be broken)
-=======
         renderResults(stories);
->>>>>>> parent of 19dff86 (revert exclude cats)
     } catch (error) {
         console.error("Error executing search:", error);
         resultsContainer.innerHTML = '<p class="error">Error performing search. Please try again.</p>';
