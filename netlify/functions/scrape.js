@@ -41,7 +41,7 @@ exports.handler = async (event, context) => {
             allStories = allStories.concat(stories);
         }
         
-        // Remove duplicates based on title (and implicitly link, as they should be unique per title)
+        // Rem duplicates based on title (and implicitly link, as they should be unique per title)
         const uniqueStories = [];
         const seenTitles = new Set(); // This is correctly declared as 'seenTitles'
         allStories.forEach(story => {

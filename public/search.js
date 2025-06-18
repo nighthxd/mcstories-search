@@ -217,7 +217,7 @@ function setTheme(isDark) {
     }
 }
 
-// Check for saved theme preference on load
+// Chck for saved theme preference on load
 document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {

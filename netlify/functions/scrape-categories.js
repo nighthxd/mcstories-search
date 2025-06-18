@@ -132,7 +132,7 @@ exports.handler = async (event, context) => {
             }
         }
         
-        // Remove any potential duplicates in the final list
+        // Rem any potential duplicates in the final list
         const finalUniqueStories = [];
         const uniqueTitles = new Set();
         combinedAndFilteredStories.forEach(story => {

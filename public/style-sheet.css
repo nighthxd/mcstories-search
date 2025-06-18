@@ -662,7 +662,7 @@ table.index {
 }
 
 .index tr:nth-child(even) {
-    background: var(--bg-color); /* Using background color variable */
+    background: var(--bg-color); /* Using bg color variable */
 }
 
 .index td, .index th {
