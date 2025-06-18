@@ -1,6 +1,7 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const { searchall } = require('../../categories');
+const excludedLinks = require('../../excludedLinks');
 
 // scrapeWebsite function - now only fetches title and link
 async function scrapeWebsite(url, searchQuery) {
@@ -15,6 +16,7 @@ async function scrapeWebsite(url, searchQuery) {
             const fullLink = new URL(link, url).href;
 
             const isAuthorOrTagPage = fullLink.includes('https://mcstories.com/Authors') || fullLink.includes('https://mcstories.com/Tags/');
+            const isExcluded = excludedLinks.has(fullLink);
             const matchesQuery = searchQuery === '' || title.toLowerCase().includes(searchQuery.toLowerCase());
 
             if (title && link && !isAuthorOrTagPage && !isExcluded && matchesQuery) {
